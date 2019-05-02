@@ -22,148 +22,156 @@ import com.pdftron.reactnative.utils.ReactUtils;
 
 public class DocumentView extends com.pdftron.pdf.controls.DocumentView {
 
-    private static final String TAG = DocumentView.class.getSimpleName();
+  private static final String TAG = DocumentView.class.getSimpleName();
 
-    // EVENTS
-    private static final String ON_NAV_BUTTON_PRESSED = "onLeadingNavButtonPressed";
-    // EVENTS END
+  // EVENTS
+  private static final String ON_NAV_BUTTON_PRESSED = "onLeadingNavButtonPressed";
+  // EVENTS END
 
-    private String mDocumentPath;
+  private String mDocumentPath;
 
-    public DocumentView(Context context) {
-        super(context);
+  public DocumentView(Context context) {
+    super(context);
+  }
+
+  public DocumentView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+  }
+
+  public DocumentView(Context context, AttributeSet attrs, int defStyleAttr) {
+    super(context, attrs, defStyleAttr);
+  }
+
+  public void setup(ThemedReactContext reactContext) {
+    int width = ViewGroup.LayoutParams.MATCH_PARENT;
+    int height = ViewGroup.LayoutParams.MATCH_PARENT;
+    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(width, height);
+    setLayoutParams(params);
+
+    Activity currentActivity = reactContext.getCurrentActivity();
+    if (currentActivity instanceof FragmentActivity) {
+      setSupportFragmentManager(((FragmentActivity) reactContext.getCurrentActivity()).getSupportFragmentManager());
+    } else {
+      throw new IllegalStateException("FragmentActivity required.");
     }
+  }
 
-    public DocumentView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+  public void setDocument(String path) {
+    if (Utils.isNullOrEmpty(path)) {
+      return;
     }
+    mDocumentPath = path;
+  }
 
-    public DocumentView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
+  public void setNavResName(String resName) {
+    setNavIconResName(resName);
+  }
 
-    public void setup(ThemedReactContext reactContext) {
-        int width = ViewGroup.LayoutParams.MATCH_PARENT;
-        int height = ViewGroup.LayoutParams.MATCH_PARENT;
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(width, height);
-        setLayoutParams(params);
+  private boolean mShouldHandleKeyboard = false;
 
-        Activity currentActivity = reactContext.getCurrentActivity();
-        if (currentActivity instanceof FragmentActivity) {
-            setSupportFragmentManager(((FragmentActivity) reactContext.getCurrentActivity()).getSupportFragmentManager());
-        } else {
-            throw new IllegalStateException("FragmentActivity required.");
+  private final ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+    @Override
+    public void onGlobalLayout() {
+      Rect r = new Rect();
+      getWindowVisibleDisplayFrame(r);
+      int screenHeight = getRootView().getHeight();
+
+      // r.bottom is the position above soft keypad or device button.
+      // if keypad is shown, the r.bottom is smaller than that before.
+      int keypadHeight = screenHeight - r.bottom;
+
+      if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+        // keyboard is opened
+        mShouldHandleKeyboard = true;
+      } else {
+        // keyboard is closed
+        if (mShouldHandleKeyboard) {
+          mShouldHandleKeyboard = false;
+          requestLayout();
         }
+      }
     }
+  };
 
-    public void setDocument(String path) {
-        if (Utils.isNullOrEmpty(path)) {
-            return;
-        }
-        mDocumentPath = path;
-    }
-
-    public void setNavResName(String resName) {
-        setNavIconResName(resName);
-    }
-
-    private boolean mShouldHandleKeyboard = false;
-
-    private final ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
-        @Override
-        public void onGlobalLayout() {
-            Rect r = new Rect();
-            getWindowVisibleDisplayFrame(r);
-            int screenHeight = getRootView().getHeight();
-
-            // r.bottom is the position above soft keypad or device button.
-            // if keypad is shown, the r.bottom is smaller than that before.
-            int keypadHeight = screenHeight - r.bottom;
-
-            if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
-                // keyboard is opened
-                mShouldHandleKeyboard = true;
-            } else {
-                // keyboard is closed
-                if (mShouldHandleKeyboard) {
-                    mShouldHandleKeyboard = false;
-                    requestLayout();
-                }
-            }
-        }
-    };
-
-    private final Runnable mLayoutRunnable = new Runnable() {
-        @Override
-        public void run() {
-            measure(
-                MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY));
-            layout(getLeft(), getTop(), getRight(), getBottom());
-        }
-    };
-
+  private final Runnable mLayoutRunnable = new Runnable() {
     @Override
-    public void requestLayout() {
-        super.requestLayout();
-
-        post(mLayoutRunnable);
+    public void run() {
+      measure(MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
+          MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY));
+      layout(getLeft(), getTop(), getRight(), getBottom());
     }
+  };
 
-    @Override
-    protected void onAttachedToWindow() {
-        Uri fileUri = ReactUtils.getUri(getContext(), mDocumentPath);
-        if (fileUri != null) {
-            setDocumentUri(fileUri);
-            ToolManagerBuilder toolManagerBuilder = ToolManagerBuilder.from()
-                .disableToolModes(new ToolManager.ToolMode[]{
-                    ToolManager.ToolMode.STAMPER
-                });
-            ViewerConfig.Builder builder = new ViewerConfig.Builder();
-            ViewerConfig config = builder
-                .fullscreenModeEnabled(false)
-                .multiTabEnabled(false)
-                .showCloseTabOption(false)
-                .useSupportActionBar(false)
-                .toolManagerBuilder(toolManagerBuilder)
-                .build();
-            setViewerConfig(config);
-        }
-        super.onAttachedToWindow();
+  @Override
+  public void requestLayout() {
+    super.requestLayout();
 
-        getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+    post(mLayoutRunnable);
+  }
+
+  @Override
+  protected void onAttachedToWindow() {
+    Uri fileUri = ReactUtils.getUri(getContext(), mDocumentPath);
+    if (fileUri != null) {
+      setDocumentUri(fileUri);
+      ToolManagerBuilder toolManagerBuilder = ToolManagerBuilder.from().setEditInk(true).setOpenToolbar(true)
+          .setBuildInPageIndicator(false).setCopyAnnot(true)
+          .disableToolModes(new ToolManager.ToolMode[] { ToolManager.ToolMode.ANNOT_EDIT,
+              ToolManager.ToolMode.ANNOT_EDIT_ADVANCED_SHAPE, ToolManager.ToolMode.ANNOT_EDIT_LINE,
+              ToolManager.ToolMode.ANNOT_EDIT_RECT_GROUP, ToolManager.ToolMode.ANNOT_EDIT_TEXT_MARKUP,
+              ToolManager.ToolMode.AREA_MEASURE_CREATE, ToolManager.ToolMode.ARROW_CREATE,
+              ToolManager.ToolMode.CALLOUT_CREATE, ToolManager.ToolMode.CLOUD_CREATE,
+              ToolManager.ToolMode.DIGITAL_SIGNATURE, ToolManager.ToolMode.FILE_ATTACHMENT_CREATE,
+              ToolManager.ToolMode.FORM_CHECKBOX_CREATE, ToolManager.ToolMode.FORM_FILL,
+              ToolManager.ToolMode.FORM_SIGNATURE_CREATE, ToolManager.ToolMode.FORM_TEXT_FIELD_CREATE,
+              ToolManager.ToolMode.INK_CREATE, ToolManager.ToolMode.INK_ERASER, ToolManager.ToolMode.LINE_CREATE,
+              ToolManager.ToolMode.LINK_ACTION, ToolManager.ToolMode.OVAL_CREATE,
+              ToolManager.ToolMode.PERIMETER_MEASURE_CREATE, ToolManager.ToolMode.POLYGON_CREATE,
+              ToolManager.ToolMode.POLYLINE_CREATE, ToolManager.ToolMode.RECT_LINK, ToolManager.ToolMode.RECT_REDACTION,
+              ToolManager.ToolMode.RICH_MEDIA, ToolManager.ToolMode.RUBBER_STAMPER, ToolManager.ToolMode.RULER_CREATE,
+              ToolManager.ToolMode.SIGNATURE, ToolManager.ToolMode.SOUND_CREATE, ToolManager.ToolMode.STAMPER,
+              ToolManager.ToolMode.TEXT_CREATE, ToolManager.ToolMode.TEXT_HIGHLIGHT,
+              ToolManager.ToolMode.TEXT_HIGHLIGHTER, ToolManager.ToolMode.TEXT_LINK_CREATE,
+              ToolManager.ToolMode.TEXT_REDACTION, ToolManager.ToolMode.TEXT_SELECT, ToolManager.ToolMode.TEXT_SQUIGGLY,
+              ToolManager.ToolMode.TEXT_STRIKEOUT, ToolManager.ToolMode.TEXT_UNDERLINE });
+      ViewerConfig.Builder builder = new ViewerConfig.Builder();
+      ViewerConfig config = builder.fullscreenModeEnabled(false).multiTabEnabled(false).showCloseTabOption(false)
+          .useSupportActionBar(false).showShareOption(false).showSaveCopyOption(false).showEditPagesOption(false)
+          .showPrintOption(false).toolManagerBuilder(toolManagerBuilder).build();
+      setViewerConfig(config);
     }
+    super.onAttachedToWindow();
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
+    getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+  }
 
-        getViewTreeObserver().removeOnGlobalLayoutListener(mOnGlobalLayoutListener);
-    }
+  @Override
+  protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
 
-    @Override
-    public void onNavButtonPressed() {
-        WritableMap event = Arguments.createMap();
-        event.putString(ON_NAV_BUTTON_PRESSED, ON_NAV_BUTTON_PRESSED);
-        ReactContext reactContext = (ReactContext) getContext();
-        reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
-            getId(),
-            "topChange",
-            event);
-    }
+    getViewTreeObserver().removeOnGlobalLayoutListener(mOnGlobalLayoutListener);
+  }
 
-    @Override
-    public boolean canShowFileInFolder() {
-        return false;
-    }
+  @Override
+  public void onNavButtonPressed() {
+    WritableMap event = Arguments.createMap();
+    event.putString(ON_NAV_BUTTON_PRESSED, ON_NAV_BUTTON_PRESSED);
+    ReactContext reactContext = (ReactContext) getContext();
+    reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(getId(), "topChange", event);
+  }
 
-    @Override
-    public boolean canShowFileCloseSnackbar() {
-        return false;
-    }
+  @Override
+  public boolean canShowFileInFolder() {
+    return false;
+  }
 
-    @Override
-    public boolean canRecreateActivity() {
-        return false;
-    }
+  @Override
+  public boolean canShowFileCloseSnackbar() {
+    return false;
+  }
+
+  @Override
+  public boolean canRecreateActivity() {
+    return false;
+  }
 }
