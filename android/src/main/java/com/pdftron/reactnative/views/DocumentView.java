@@ -1,8 +1,11 @@
 package com.pdftron.reactnative.views;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.support.v4.app.FragmentActivity;
 import android.util.AttributeSet;
@@ -48,7 +51,9 @@ public class DocumentView extends com.pdftron.pdf.controls.DocumentView {
     ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(width, height);
     setLayoutParams(params);
 
+
     Activity currentActivity = reactContext.getCurrentActivity();
+
     if (currentActivity instanceof FragmentActivity) {
       setSupportFragmentManager(((FragmentActivity) reactContext.getCurrentActivity()).getSupportFragmentManager());
     } else {
@@ -116,28 +121,76 @@ public class DocumentView extends com.pdftron.pdf.controls.DocumentView {
       setDocumentUri(fileUri);
       ToolManagerBuilder toolManagerBuilder = ToolManagerBuilder.from().setEditInk(true).setOpenToolbar(true)
           .setBuildInPageIndicator(false).setCopyAnnot(true)
-          .disableToolModes(new ToolManager.ToolMode[] { ToolManager.ToolMode.ANNOT_EDIT,
-              ToolManager.ToolMode.ANNOT_EDIT_ADVANCED_SHAPE, ToolManager.ToolMode.ANNOT_EDIT_LINE,
-              ToolManager.ToolMode.ANNOT_EDIT_RECT_GROUP, ToolManager.ToolMode.ANNOT_EDIT_TEXT_MARKUP,
-              ToolManager.ToolMode.AREA_MEASURE_CREATE, ToolManager.ToolMode.ARROW_CREATE,
-              ToolManager.ToolMode.CALLOUT_CREATE, ToolManager.ToolMode.CLOUD_CREATE,
-              ToolManager.ToolMode.DIGITAL_SIGNATURE, ToolManager.ToolMode.FILE_ATTACHMENT_CREATE,
-              ToolManager.ToolMode.FORM_CHECKBOX_CREATE, ToolManager.ToolMode.FORM_FILL,
-              ToolManager.ToolMode.FORM_SIGNATURE_CREATE, ToolManager.ToolMode.FORM_TEXT_FIELD_CREATE,
-              ToolManager.ToolMode.INK_CREATE, ToolManager.ToolMode.INK_ERASER, ToolManager.ToolMode.LINE_CREATE,
-              ToolManager.ToolMode.LINK_ACTION, ToolManager.ToolMode.OVAL_CREATE,
-              ToolManager.ToolMode.PERIMETER_MEASURE_CREATE, ToolManager.ToolMode.POLYGON_CREATE,
-              ToolManager.ToolMode.POLYLINE_CREATE, ToolManager.ToolMode.RECT_LINK, ToolManager.ToolMode.RECT_REDACTION,
-              ToolManager.ToolMode.RICH_MEDIA, ToolManager.ToolMode.RUBBER_STAMPER, ToolManager.ToolMode.RULER_CREATE,
-              ToolManager.ToolMode.SIGNATURE, ToolManager.ToolMode.SOUND_CREATE, ToolManager.ToolMode.STAMPER,
-              ToolManager.ToolMode.TEXT_CREATE, ToolManager.ToolMode.TEXT_HIGHLIGHT,
-              ToolManager.ToolMode.TEXT_HIGHLIGHTER, ToolManager.ToolMode.TEXT_LINK_CREATE,
-              ToolManager.ToolMode.TEXT_REDACTION, ToolManager.ToolMode.TEXT_SELECT, ToolManager.ToolMode.TEXT_SQUIGGLY,
-              ToolManager.ToolMode.TEXT_STRIKEOUT, ToolManager.ToolMode.TEXT_UNDERLINE });
+          .disableToolModes(new ToolManager.ToolMode[] {
+            ToolManager.ToolMode.DIGITAL_SIGNATURE,
+            ToolManager.ToolMode.FORM_SIGNATURE_CREATE,
+            ToolManager.ToolMode.SIGNATURE,
+            ToolManager.ToolMode.ANNOT_EDIT,
+            ToolManager.ToolMode.ANNOT_EDIT_ADVANCED_SHAPE,
+            ToolManager.ToolMode.ANNOT_EDIT_LINE,
+            ToolManager.ToolMode.ANNOT_EDIT_RECT_GROUP,
+            ToolManager.ToolMode.ANNOT_EDIT_TEXT_MARKUP,
+            ToolManager.ToolMode.AREA_MEASURE_CREATE,
+            ToolManager.ToolMode.ARROW_CREATE,
+            ToolManager.ToolMode.CALLOUT_CREATE,
+            ToolManager.ToolMode.CLOUD_CREATE,
+            ToolManager.ToolMode.FILE_ATTACHMENT_CREATE,
+            ToolManager.ToolMode.FORM_CHECKBOX_CREATE,
+            ToolManager.ToolMode.FORM_TEXT_FIELD_CREATE,
+            ToolManager.ToolMode.FREE_HIGHLIGHTER,
+            ToolManager.ToolMode.FORM_FILL,
+            ToolManager.ToolMode.INK_ERASER,
+            ToolManager.ToolMode.LINE_CREATE,
+            ToolManager.ToolMode.LINK_ACTION,
+            ToolManager.ToolMode.OVAL_CREATE,
+            ToolManager.ToolMode.PERIMETER_MEASURE_CREATE,
+            ToolManager.ToolMode.POLYGON_CREATE,
+            ToolManager.ToolMode.POLYLINE_CREATE,
+            ToolManager.ToolMode.RECT_CREATE,
+            ToolManager.ToolMode.RECT_LINK,
+            ToolManager.ToolMode.RECT_REDACTION,
+            ToolManager.ToolMode.RICH_MEDIA,
+            ToolManager.ToolMode.RUBBER_STAMPER,
+            ToolManager.ToolMode.RULER_CREATE,
+            ToolManager.ToolMode.SOUND_CREATE,
+            ToolManager.ToolMode.STAMPER,
+            ToolManager.ToolMode.TEXT_CREATE,
+            ToolManager.ToolMode.TEXT_HIGHLIGHT,
+            ToolManager.ToolMode.TEXT_HIGHLIGHTER,
+            ToolManager.ToolMode.TEXT_LINK_CREATE,
+            ToolManager.ToolMode.TEXT_REDACTION,
+            ToolManager.ToolMode.TEXT_SELECT,
+            ToolManager.ToolMode.TEXT_SQUIGGLY,
+            ToolManager.ToolMode.TEXT_STRIKEOUT,
+            ToolManager.ToolMode.TEXT_UNDERLINE
+          });
       ViewerConfig.Builder builder = new ViewerConfig.Builder();
-      ViewerConfig config = builder.fullscreenModeEnabled(false).multiTabEnabled(false).showCloseTabOption(false)
-          .useSupportActionBar(false).showShareOption(false).showSaveCopyOption(false).showEditPagesOption(false)
-          .showPrintOption(false).toolManagerBuilder(toolManagerBuilder).build();
+      ViewerConfig config = builder
+      .fullscreenModeEnabled(false)
+      .multiTabEnabled(false)
+      .documentEditingEnabled(true)
+      .longPressQuickMenuEnabled(true)
+      .showPageNumberIndicator(true)
+      .showBottomNavBar(true)
+      .showThumbnailView(true)
+      .showBookmarksView(true)
+      .toolbarTitle("")
+      .showSearchView(true)
+      .showShareOption(false)
+      .showDocumentSettingsOption(true)
+      .showAnnotationToolbarOption(true)
+      .showOpenFileOption(true)
+      .showOpenUrlOption(true)
+      .showSaveCopyOption(false)
+      .showEditPagesOption(false)
+      .showPrintOption(false)
+      .showCloseTabOption(false)
+      .showAnnotationsList(true)
+      .showOutlineList(true)
+      .showUserBookmarksList(true)
+      .showCropOption(false)
+      .toolManagerBuilder(toolManagerBuilder)
+      .build();
       setViewerConfig(config);
     }
     super.onAttachedToWindow();
