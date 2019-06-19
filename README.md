@@ -8,8 +8,7 @@
 - [License](#license)
 
 ## Prerequisites
-- A valid evaluation or commercial license key. If you do not have a license key, please contact sales for a commercial license key or click [here](https://www.pdftron.com/documentation/android/guides/react-native/?showkey=true) to get an evaluation key.
-- PDFTron gradle credentials that comes with your license key (Android)
+- No license key is requird for trial. However, a valid commercial license key is required after trial.
 - npm
 - PDFTron SDK >= 6.10.0
 - react-native >= 0.59.0
@@ -18,7 +17,7 @@
 
 **Android** |  **iOS**
 :--:|:--:
-![demo](./react-native-pdftron-demo-android.gif) | ![demo](./react-native-pdftron-demo-ios.gif)
+<img alt='demo' src='http://pdftron.s3.amazonaws.com/custom/websitefiles/react-native-pdftron-demo-android.gif' style='width:80%' /> | ![demo](./react-native-pdftron-demo-ios.gif)
 
 ## Installation
 
@@ -66,24 +65,13 @@
                 url "$rootDir/../node_modules/react-native/android"
             }
     +       maven {
-    +           url "s3://pdftron-maven/release"
-    +           credentials(AwsCredentials) {
-    +               accessKey AWS_ACCESS_KEY
-    +               secretKey AWS_SECRET_KEY
-    +           }
+    +           url "https://pdftron-maven.s3.amazonaws.com/release"
     +       }
         }
     }
     ```
 
-5. Add your PDFTron credentials in the `android/gradle.properties` file.
-
-    ```diff
-    AWS_ACCESS_KEY=YOUR_AWS_ACCESS_KEY
-    AWS_SECRET_KEY=YOUR_AWS_SECRET_KEY
-    ```
-
-6. Add the following in your `android/app/build.gradle` file:
+5. Add the following in your `android/app/build.gradle` file:
 
     ```diff
     android {
@@ -115,7 +103,7 @@
     }
     ```
 
-7. Add the following to your `android/app/src/main/AndroidManifest.xml` file:
+6. Add the following to your `android/app/src/main/AndroidManifest.xml` file:
 
     ```diff
     <manifest xmlns:android="http://schemas.android.com/apk/res/android"
@@ -144,7 +132,7 @@
     </manifest>
     ```
 
-8. In your `android\app\src\main\java\com\reactnativesample\MainApplication.java` file, change `Application` to `MultiDexApplication`:
+7. In your `android\app\src\main\java\com\reactnativesample\MainApplication.java` file, change `Application` to `MultiDexApplication`:
     ```diff
     - import android.app.Application;
     + import android.support.multidex.MultiDexApplication;
@@ -153,8 +141,8 @@
     + public class MainApplication extends MultiDexApplication implements ReactApplication {
     ```
 
-9. Replace `App.js` with what is shown [here](#usage)
-10. Finally in the root project directory, run `react-native run-android`.
+8. Replace `App.js` with what is shown [here](#usage)
+9. Finally in the root project directory, run `react-native run-android`.
 
 ### iOS
 
@@ -172,7 +160,7 @@
     ```
     target 'MyApp' do
         use_frameworks!
-        pod 'PDFNet', podspec: 'POD_LINK_GOES_HERE'
+        pod 'PDFNet', podspec: 'https://www.pdftron.com/downloads/ios/cocoapods/pdfnet/latest.podspec'
     end
     ```
 
@@ -185,8 +173,6 @@
 ## Usage
 
 Replace `App.js` with the following:
-
-**Replace `your_pdftron_license_key` string with your license key**
 
 ```javascript
 import React, { Component } from 'react';
@@ -213,7 +199,7 @@ export default class App extends Component<Props> {
       permissionGranted: Platform.OS === 'ios' ? true : false
     };
 
-    RNPdftron.initialize("your_pdftron_license_key ");
+    RNPdftron.initialize("Insert commercial license key here after purchase");
   }
 
   componentDidMount() {
@@ -270,7 +256,7 @@ export default class App extends Component<Props> {
       )
     }
 
-    const path = "https://pdftron.s3.amazonaws.com/downloads/pdfref.pdf";
+    const path = "https://pdftron.s3.amazonaws.com/downloads/pl/PDFTRON_mobile_about.pdf";
 
     return (
       <DocumentView
@@ -329,6 +315,8 @@ A component for displaying documents of different types such as PDF, docx, pptx,
 - [leadingNavButtonIcon](#leadingnavbuttonicon)
 - [onLeadingNavButtonPressed](#onleadingnavbuttonpressed)
 - [showLeadingNavButton](#showleadingnavbutton)
+- [disabledElements](#disabledelements)
+- [disabledTools](#disabledtools)
 
 ##### document
 string, required
@@ -340,6 +328,22 @@ string, optional
 function, optional
 ##### showLeadingNavButton
 bool, optional
+##### disabledElements
+array of string, optional
+##### disabledTools
+array of string, optional
+
+```js
+import { DocumentView, Config } from 'react-native-pdftron';
+<DocumentView
+  document={path}
+  showLeadingNavButton={true}
+  leadingNavButtonIcon={Platform.OS === 'ios' ? 'ic_close_black_24px.png' : 'ic_arrow_back_white_24dp'}
+  onLeadingNavButtonPressed={this.onLeadingNavButtonPressed}
+  disabledElements={[Config.Buttons.searchButton, Config.Buttons.shareButton]}
+  disabledTools={[Config.Tools.annotationCreateLine, Config.Tools.annotationCreateRectangle]}
+/>
+```
 
 ## Contributing
 See [Contributing](./CONTRIBUTING.md)

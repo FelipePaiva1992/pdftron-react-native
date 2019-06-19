@@ -26,20 +26,45 @@
         return;
     }
     
-    _documentController = [[PTTabbedDocumentViewController alloc] init];
-    _documentController.tabsEnabled = NO;
+    _documentController = [[PTDocumentViewController alloc] init];
+
+    _documentController.controlsHidden = NO;
+    
+    _documentController.shareButtonHidden = YES;
+    UIColor* white = [UIColor whiteColor];
+    [_documentController.pdfViewCtrl setBackgroundColor:white];
+    
+    
+
+
+
+    
+    
+
+
     if (_showNavButton) {
         UIImage *navImage = [UIImage imageNamed:_navButtonPath];
         UIBarButtonItem *navButton = [[UIBarButtonItem alloc] initWithImage:navImage style:UIBarButtonItemStylePlain target:self action:@selector(navButtonClicked)];
         _documentController.navigationItem.leftBarButtonItem = navButton;
+
     }
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_documentController];
+    
     
     UIView *controllerView = navigationController.view;
     
     [controller addChildViewController:navigationController];
     [self addSubview:controllerView];
+    
+    UIColor* black = [UIColor blackColor];
+    controllerView.tintColor = black;
+    controllerView.backgroundColor = white;
+
+    
+ 
+
+
     
     controllerView.translatesAutoresizingMaskIntoConstraints = NO;
     
