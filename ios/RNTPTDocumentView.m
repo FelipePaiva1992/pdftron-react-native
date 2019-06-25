@@ -7,17 +7,25 @@
 
 #import "RNTPTDocumentView.h"
 
+@interface RNTPTDocumentView () <PTDocumentViewControllerDelegate>
+@end
+
 @implementation RNTPTDocumentView
 @synthesize delegate;
 
 -(instancetype)initWithFrame:(CGRect)frame
 {
-    return [super initWithFrame:frame];
+    self = [super initWithFrame:frame];
+    if (self) {
+        _documentViewController = [[PTDocumentViewController alloc] init];
+        _documentViewController.delegate = self;
+    }
+    return self;
 }
 
 - (void)didMoveToWindow
 {
-    if (_documentController) {
+    if (_documentViewController) {
         return;
     }
     
@@ -26,13 +34,12 @@
         return;
     }
     
-    _documentController = [[PTDocumentViewController alloc] init];
 
-    _documentController.controlsHidden = NO;
+    _documentViewController.controlsHidden = NO;
     
-    _documentController.shareButtonHidden = YES;
+    _documentViewController.shareButtonHidden = YES;
     UIColor* white = [UIColor whiteColor];
-    [_documentController.pdfViewCtrl setBackgroundColor:white];
+    [_documentViewController.pdfViewCtrl setBackgroundColor:white];
     
     
 
@@ -45,11 +52,11 @@
     if (_showNavButton) {
         UIImage *navImage = [UIImage imageNamed:_navButtonPath];
         UIBarButtonItem *navButton = [[UIBarButtonItem alloc] initWithImage:navImage style:UIBarButtonItemStylePlain target:self action:@selector(navButtonClicked)];
-        _documentController.navigationItem.leftBarButtonItem = navButton;
+        _documentViewController.navigationItem.leftBarButtonItem = navButton;
 
     }
     
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_documentController];
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_documentViewController];
     
     
     UIView *controllerView = navigationController.view;
@@ -85,7 +92,7 @@
         fileURL = [NSURL fileURLWithPath:_document];
     }
 
-    [_documentController openDocumentWithURL:fileURL];
+    [_documentViewController openDocumentWithURL:fileURL];
 }
 
 - (void)navButtonClicked
