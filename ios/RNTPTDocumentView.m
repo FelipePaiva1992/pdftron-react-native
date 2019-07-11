@@ -80,7 +80,7 @@
     
     
     
-    [_documentViewController openDocumentWithURL:fileURL];
+    [_documentViewController openDocumentWithURL:fileURL password:self.password];
 }
 
 -(void)disableElements:(NSArray<NSString*>*)disabledElements
