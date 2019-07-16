@@ -118,7 +118,7 @@
       @"thumbnailSlider":
           ^{
               self.documentViewController.thumbnailSliderHidden = YES;
-          }
+          },
       @"controls":
           ^{
               self.documentViewController.controlsHidden = NO;
