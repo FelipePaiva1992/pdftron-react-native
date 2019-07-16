@@ -22,10 +22,11 @@ RCT_CUSTOM_VIEW_PROPERTY(document, NSString, RNTPTDocumentView)
 
 RCT_CUSTOM_VIEW_PROPERTY(password, NSString, RNTPTDocumentView)
 {
-    if (json) {
+    if (json && [RCTConvert NSString:json]) {
         view.password = [RCTConvert NSString:json];
     }
 }
+
 
 RCT_CUSTOM_VIEW_PROPERTY(showLeadingNavButton, BOOL, RNTPTDocumentView)
 {
@@ -91,6 +92,12 @@ RCT_CUSTOM_VIEW_PROPERTY(pageIndicatorShowsWithControls, BOOL, RNTPTDocumentView
     }
 }
 
+RCT_CUSTOM_VIEW_PROPERTY(customHeaders, NSDictionary, RNTPTDocumentView)
+{
+    if (json) {
+        view.customHeaders = [RCTConvert NSDictionary:json];
+    }
+}
 
 - (UIView *)view
 {

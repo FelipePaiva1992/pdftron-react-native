@@ -34,14 +34,8 @@
     if (parentController == nil || self.window == nil) {
         return;
     }
-    
-    _documentViewController.controlsHidden = NO;
-    
-    _documentViewController.shareButtonHidden = YES;
-    UIColor* white = [UIColor whiteColor];
-    [_documentViewController.pdfViewCtrl setBackgroundColor:white];
-    
-    
+
+
     if (_showNavButton) {
         UIImage *navImage = [UIImage imageNamed:_navButtonPath];
         UIBarButtonItem *navButton = [[UIBarButtonItem alloc] initWithImage:navImage style:UIBarButtonItemStylePlain target:self action:@selector(navButtonClicked)];
@@ -54,10 +48,14 @@
     
     [parentController addChildViewController:navigationController];
     [self addSubview:controllerView];
-    
+
+
+    UIColor* white = [UIColor whiteColor];
     UIColor* black = [UIColor blackColor];
+    [_documentViewController.pdfViewCtrl setBackgroundColor:white];
     controllerView.tintColor = black;
     controllerView.backgroundColor = white;
+    
     
     controllerView.translatesAutoresizingMaskIntoConstraints = NO;
     
@@ -78,9 +76,7 @@
         fileURL = [NSURL fileURLWithPath:_document];
     }
     
-    
-    
-    [_documentViewController openDocumentWithURL:fileURL password:self.password];
+    [_documentViewController openDocumentWithURL:fileURL password:_password];
 }
 
 -(void)disableElements:(NSArray<NSString*>*)disabledElements
@@ -93,37 +89,42 @@
     
     typedef void (^HideElementBlock)(void);
     
-    NSDictionary *hideElementActions = @{
-                                         @"toolsButton":
-                                             ^{
-                                                 self.documentViewController.annotationToolbarButtonHidden = YES;
-                                             },
-                                         @"searchButton":
-                                             ^{
-                                                 self.documentViewController.searchButtonHidden = YES;
-                                             },
-                                         @"shareButton":
-                                             ^{
-                                                 self.documentViewController.shareButtonHidden = YES;
-                                             },
-                                         @"viewControlsButton":
-                                             ^{
-                                                 self.documentViewController.viewerSettingsButtonHidden = YES;
-                                             },
-                                         @"thumbnailsButton":
-                                             ^{
-                                                 self.documentViewController.thumbnailBrowserButtonHidden = YES;
-                                             },
-                                         @"listsButton":
-                                             ^{
-                                                 self.documentViewController.navigationListsButtonHidden = YES;
-                                             },
-                                         @"thumbnailSlider":
-                                             ^{
-                                                 self.documentViewController.thumbnailSliderHidden = YES;
-                                             }
-                                         };
-    
+    NSDictionary *hideElementActions =
+    @{
+      @"toolsButton":
+          ^{
+              self.documentViewController.annotationToolbarButtonHidden = YES;
+          },
+      @"searchButton":
+          ^{
+              self.documentViewController.searchButtonHidden = YES;
+          },
+      @"shareButton":
+          ^{
+              self.documentViewController.shareButtonHidden = YES;
+          },
+      @"viewControlsButton":
+          ^{
+              self.documentViewController.viewerSettingsButtonHidden = YES;
+          },
+      @"thumbnailsButton":
+          ^{
+              self.documentViewController.thumbnailBrowserButtonHidden = YES;
+          },
+      @"listsButton":
+          ^{
+              self.documentViewController.navigationListsButtonHidden = YES;
+          },
+      @"thumbnailSlider":
+          ^{
+              self.documentViewController.thumbnailSliderHidden = YES;
+          }
+      @"controls":
+          ^{
+              self.documentViewController.controlsHidden = NO;
+          }    
+      };
+
     
     for(NSObject* item in disabledElements)
     {
@@ -277,6 +278,15 @@
     _pageIndicatorShowsWithControls = pageIndicatorShowsWithControls;
 }
 
+- (void)setCustomHeaders:(NSDictionary<NSString *,NSString *> *)customHeaders
+{
+    PTHTTPRequestOptions *options = self.documentViewController.httpRequestOptions;
+    [customHeaders enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+        [options AddHeader:key val:value];
+    }];
+    _customHeaders = customHeaders;
+}
+
 
 - (void)navButtonClicked
 {
@@ -302,11 +312,11 @@
 
 #pragma mark - <PTDocumentViewControllerDelegate>
 
-- (BOOL)documentViewController:(PTDocumentViewController *)documentViewController shouldExportCachedDocumentAtURL:(NSURL *)cachedDocumentUrl
-{
-    // Don't export the downloaded file (ie. keep using the cache file).
-    return NO;
-}
+//- (BOOL)documentViewController:(PTDocumentViewController *)documentViewController shouldExportCachedDocumentAtURL:(NSURL *)cachedDocumentUrl
+//{
+//    // Don't export the downloaded file (ie. keep using the cache file).
+//    return NO;
+//}
 
 - (BOOL)documentViewController:(PTDocumentViewController *)documentViewController shouldDeleteCachedDocumentAtURL:(NSURL *)cachedDocumentUrl
 {
