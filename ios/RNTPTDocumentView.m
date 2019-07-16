@@ -48,6 +48,14 @@
     
     [parentController addChildViewController:navigationController];
     [self addSubview:controllerView];
+
+
+    UIColor* white = [UIColor whiteColor];
+    UIColor* black = [UIColor blackColor];
+    [_documentViewController.pdfViewCtrl setBackgroundColor:white];
+    controllerView.tintColor = black;
+    controllerView.backgroundColor = white;
+    
     
     controllerView.translatesAutoresizingMaskIntoConstraints = NO;
     
@@ -111,8 +119,12 @@
           ^{
               self.documentViewController.thumbnailSliderHidden = YES;
           }
+      @"controls":
+          ^{
+              self.documentViewController.controlsHidden = NO;
+          }    
       };
-    
+
     
     for(NSObject* item in disabledElements)
     {
