@@ -50,7 +50,10 @@
     [self addSubview:controllerView];
 
 
-    UIColor* white = [UIColor whiteColor];
+   UIColor* white = [UIColor colorWithRed:234.0f/255.0f
+                                     green:234.0f/255.0f
+                                      blue:234.0f/255.0f
+                                     alpha:1.0f];
     UIColor* black = [UIColor blackColor];
     [_documentViewController.pdfViewCtrl setBackgroundColor:white];
     controllerView.tintColor = black;
