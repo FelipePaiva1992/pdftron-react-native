@@ -307,7 +307,7 @@ public class DocumentView extends com.pdftron.pdf.controls.DocumentView {
       .multiTabEnabled(false)
       .documentEditingEnabled(true)
       .longPressQuickMenuEnabled(true)
-      .showPageNumberIndicator(true)
+      .showPageNumberIndicator(false)
       .showBottomNavBar(true)
       .showThumbnailView(true)
       .showBookmarksView(true)

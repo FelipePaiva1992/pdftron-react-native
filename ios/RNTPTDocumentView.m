@@ -125,6 +125,10 @@
       @"controls":
           ^{
               self.documentViewController.controlsHidden = NO;
+          },
+      @"pageNumber":
+          ^{
+              self.documentViewController.pageIndicatorEnabled = NO;
           }    
       };
 
