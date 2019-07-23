@@ -58,7 +58,7 @@
     [_documentViewController.pdfViewCtrl setBackgroundColor:white];
     controllerView.tintColor = black;
     controllerView.backgroundColor = white;
-    
+      [_documentViewController.pdfViewCtrl SetPageRefViewMode:(e_trn_fit_page)];
     
     controllerView.translatesAutoresizingMaskIntoConstraints = NO;
     
