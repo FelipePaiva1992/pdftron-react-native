@@ -18,27 +18,27 @@
 
 @interface RNTPTDocumentView : UIView
 
-@property (readonly) PTDocumentViewController *documentViewController;
+@property(nonatomic, readonly) PTDocumentViewController *documentViewController;
 
 // viewer options
-@property (nonatomic, assign) BOOL nightModeEnabled;
-@property (nonatomic, assign) BOOL bottomToolbarEnabled;
-@property (nonatomic, assign) BOOL pageIndicatorEnabled;
-@property (nonatomic, assign) BOOL pageIndicatorShowsOnPageChange;
-@property (nonatomic, assign) BOOL pageIndicatorShowsWithControls;
+@property(nonatomic, assign) BOOL nightModeEnabled;
+@property(nonatomic, assign) BOOL bottomToolbarEnabled;
+@property(nonatomic, assign) BOOL pageIndicatorEnabled;
+@property(nonatomic, assign) BOOL pageIndicatorShowsOnPageChange;
+@property(nonatomic, assign) BOOL pageIndicatorShowsWithControls;
 
 @property NSString *document;
 @property NSString *password;
+@property(nonatomic) int initialPageNumber;
 @property BOOL showNavButton;
 @property NSString *navButtonPath;
-@property (nonatomic, strong) NSDictionary<NSString *, NSString *> *customHeaders;
+@property(nonatomic, strong) NSDictionary<NSString *, NSString *> *customHeaders;
 
-@property (nonatomic, copy) RCTBubblingEventBlock onChange;
+@property(nonatomic, copy) RCTBubblingEventBlock onChange;
 
-@property (nonatomic, weak) id <RNTPTDocumentViewDelegate> delegate;
+@property(nonatomic, weak) id<RNTPTDocumentViewDelegate> delegate;
 
-
--(void)disableElements:(NSArray<NSString*>*)disabledElements;
--(void)setToolsPermission:(NSArray<NSString*>*) stringsArray toValue:(BOOL)value;
+- (void)disableElements:(NSArray<NSString *> *)disabledElements;
+- (void)setToolsPermission:(NSArray<NSString *> *)stringsArray toValue:(BOOL)value;
 
 @end
