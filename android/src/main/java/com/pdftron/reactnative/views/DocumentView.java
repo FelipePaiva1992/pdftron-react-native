@@ -23,7 +23,6 @@ import com.pdftron.pdf.utils.Utils;
 import com.pdftron.reactnative.utils.ReactUtils;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -40,6 +39,7 @@ public class DocumentView extends com.pdftron.pdf.controls.DocumentView {
     private ToolManagerBuilder mToolManagerBuilder;
     private ViewerConfig.Builder mBuilder;
     private String mCacheDir;
+    private int mInitialPageNumber = -1;
 
     public DocumentView(Context context) {
         super(context);
@@ -100,11 +100,14 @@ public class DocumentView extends com.pdftron.pdf.controls.DocumentView {
             return;
         }
         try {
-            JSONObject headers = ReactUtils.convertMapToJson(map);
-            // TODO
+            mCustomHeaders = ReactUtils.convertMapToJson(map);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setInitialPageNumber(int pageNum) {
+        mInitialPageNumber = pageNum;
     }
 
     private void disableElements(ReadableArray args) {
@@ -366,5 +369,18 @@ public class DocumentView extends com.pdftron.pdf.controls.DocumentView {
     @Override
     public boolean canRecreateActivity() {
         return false;
+    }
+
+    @Override
+    public void onTabDocumentLoaded(String tag) {
+        super.onTabDocumentLoaded(tag);
+
+        if (mInitialPageNumber > 0) {
+            try {
+                mPdfViewCtrlTabHostFragment.getCurrentPdfViewCtrlFragment().getPDFViewCtrl().setCurrentPage(mInitialPageNumber);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 }

@@ -18,7 +18,8 @@
 
 @interface RNTPTDocumentView : UIView
 
-@property(nonatomic, readonly) PTDocumentViewController *documentViewController;
+@property (nonatomic, readonly) PTDocumentViewController *documentViewController;
+
 
 // viewer options
 @property(nonatomic, assign) BOOL nightModeEnabled;
@@ -27,9 +28,11 @@
 @property(nonatomic, assign) BOOL pageIndicatorShowsOnPageChange;
 @property(nonatomic, assign) BOOL pageIndicatorShowsWithControls;
 
+@property NSString *password;
 @property NSString *document;
 @property NSString *password;
-@property(nonatomic) int initialPageNumber;
+@property (nonatomic) int initialPageNumber;
+
 @property BOOL showNavButton;
 @property NSString *navButtonPath;
 @property(nonatomic, strong) NSDictionary<NSString *, NSString *> *customHeaders;
